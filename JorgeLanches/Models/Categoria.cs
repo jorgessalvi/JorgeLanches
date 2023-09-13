@@ -8,5 +8,7 @@
 
         public string? ImagemUrl { get; set; }
 
+        public ICollection<Produto>? produtos { get; set; }
+
     }
 }
