@@ -2,6 +2,7 @@
 using JorgeLanches.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace JorgeLanches.Controllers
 {
@@ -56,6 +57,35 @@ namespace JorgeLanches.Controllers
         
 
         }
+
+
+        [HttpPut("{id:int}")]
+        public ActionResult Put(int id, Produto produto)
+        {
+            if(id != produto.ProdutoId) { return BadRequest();}
+
+            _Context.Entry(produto).State = EntityState.Modified;
+            _Context.SaveChanges();
+
+            return Ok(produto);
+
+        }
+
+        [HttpDelete("{id:int}")]
+        public ActionResult Delete(int id)
+        {
+
+            var produto = _Context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+
+            if (produto is null) { return NotFound("Produto não Encontrado."); }
+
+            _Context.Produtos.Remove(produto);
+            _Context.SaveChanges();
+
+            return Ok(produto);
+
+        }
+
 
     }
 }
