@@ -24,7 +24,7 @@ namespace JorgeLanches.Controllers
             return _Context.Categorias.ToList();
         }
 
-        [HttpGet("id:int", Name ="ObterCategoria")]
+        [HttpGet("{id:int}", Name ="ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
             var categoria = _Context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
@@ -53,12 +53,12 @@ namespace JorgeLanches.Controllers
             _Context.Categorias.Add(categoria);
             _Context.SaveChanges();
 
-            return new CreatedAtRouteResult("ObterProdutos",
+            return new CreatedAtRouteResult("ObterCategoria",
                 new { id = categoria.CategoriaId }, categoria);
 
         }
 
-        [HttpPut("id:int")]
+        [HttpPut("{id:int}")]
         public ActionResult Put(int id, Categoria categoria)
         {
 
@@ -71,7 +71,7 @@ namespace JorgeLanches.Controllers
 
         }
 
-        [HttpDelete("id:int")]
+        [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
             var categoria = _Context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
