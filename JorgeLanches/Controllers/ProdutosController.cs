@@ -31,7 +31,7 @@ namespace JorgeLanches.Controllers
 
 
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name ="ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
             var produto = _Context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
@@ -42,8 +42,20 @@ namespace JorgeLanches.Controllers
             
         }
 
+        [HttpPost]
+        public ActionResult Post(Produto produto)
+        {
+
+            if (produto is null)  return BadRequest();
+
+            _Context.Produtos.Add(produto);
+            _Context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterProduto",
+                new { id = produto.ProdutoId }, produto);
         
 
+        }
 
     }
 }
