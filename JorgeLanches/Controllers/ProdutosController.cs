@@ -22,7 +22,7 @@ namespace JorgeLanches.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
-            var listaProdutos = _Context.Produtos.ToList();
+            var listaProdutos = _Context.Produtos.AsNoTracking().ToList();
 
             if(listaProdutos is null) { return NotFound(); }
 
@@ -35,7 +35,7 @@ namespace JorgeLanches.Controllers
         [HttpGet("{id:int}", Name ="ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
-            var produto = _Context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = _Context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
         
             if(produto is null) { return NotFound(); }
 

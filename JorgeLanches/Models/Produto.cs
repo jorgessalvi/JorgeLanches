@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace JorgeLanches.Models
 {
@@ -33,6 +33,7 @@ namespace JorgeLanches.Models
 
         public int CategoriaId { get; set; }
 
+        [JsonIgnore]
         public Categoria? Categoria { get; set;}
 
     }

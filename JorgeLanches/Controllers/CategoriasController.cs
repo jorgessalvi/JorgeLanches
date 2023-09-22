@@ -21,13 +21,13 @@ namespace JorgeLanches.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()
         {
-            return _Context.Categorias.ToList();
+            return _Context.Categorias.AsNoTracking().ToList();
         }
 
         [HttpGet("{id:int}", Name ="ObterCategoria")]
         public ActionResult<Categoria> Get(int id)
         {
-            var categoria = _Context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+            var categoria = _Context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
             if(categoria is null) { return NotFound("Categoria não encontrada"); }
 
@@ -39,7 +39,7 @@ namespace JorgeLanches.Controllers
         public ActionResult<IEnumerable<Categoria>> GetCategoriaProdutos()
         {
 
-            return _Context.Categorias.Include(c => c.produtos).ToList();
+            return _Context.Categorias.AsNoTracking().Include(c => c.produtos).ToList();
 
         }
 
