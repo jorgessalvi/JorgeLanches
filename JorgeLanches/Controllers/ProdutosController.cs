@@ -20,9 +20,9 @@ namespace JorgeLanches.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public async Task<ActionResult<IEnumerable<Produto>>> Get()
         {
-            var listaProdutos = _Context.Produtos.AsNoTracking().ToList();
+            var listaProdutos = await _Context.Produtos.AsNoTracking().ToListAsync();
 
             if(listaProdutos is null) { return NotFound(); }
 
@@ -33,9 +33,9 @@ namespace JorgeLanches.Controllers
 
 
         [HttpGet("{id:int}", Name ="ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public async Task<ActionResult<Produto>> Get(int id)
         {
-            var produto = _Context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
+            var produto = await _Context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
         
             if(produto is null) { return NotFound(); }
 

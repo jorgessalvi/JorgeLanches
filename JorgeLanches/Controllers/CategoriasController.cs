@@ -19,15 +19,15 @@ namespace JorgeLanches.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Categoria>> Get()
+        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
         {
-            return _Context.Categorias.AsNoTracking().ToList();
+            return await _Context.Categorias.AsNoTracking().ToListAsync();
         }
 
         [HttpGet("{id:int}", Name ="ObterCategoria")]
-        public ActionResult<Categoria> Get(int id)
+        public async Task<ActionResult<Categoria>> Get(int id)
         {
-            var categoria = _Context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
+            var categoria = await _Context.Categorias.AsNoTracking().FirstOrDefaultAsync(c => c.CategoriaId == id);
 
             if(categoria is null) { return NotFound("Categoria não encontrada"); }
 
@@ -36,10 +36,10 @@ namespace JorgeLanches.Controllers
         }
 
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<Categoria>> GetCategoriaProdutos()
+        public async  Task<ActionResult<IEnumerable<Categoria>>> GetCategoriaProdutos()
         {
 
-            return _Context.Categorias.AsNoTracking().Include(c => c.produtos).ToList();
+            return await _Context.Categorias.AsNoTracking().Include(c => c.produtos).ToListAsync();
 
         }
 
