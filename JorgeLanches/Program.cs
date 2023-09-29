@@ -1,4 +1,5 @@
 using JorgeLanches.Context;
+using JorgeLanches.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -18,6 +19,8 @@ string? mySqlConection = builder.Configuration.GetConnectionString("DefaultConne
 builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseMySql(mySqlConection,
         ServerVersion.AutoDetect(mySqlConection)));
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
