@@ -1,5 +1,6 @@
 ﻿using JorgeLanches.Context;
 using JorgeLanches.Models;
+using JorgeLanches.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,37 +12,37 @@ namespace JorgeLanches.Controllers
     public class CategoriasController : ControllerBase
     {
 
-        private readonly AppDbContext _Context;
+        private readonly IUnitOfWork _UnitOfWork;
 
-        public CategoriasController(AppDbContext context)
+        public CategoriasController(IUnitOfWork context)
         {
-            _Context = context;
+            _UnitOfWork = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> Get()
+        public ActionResult<IEnumerable<Categoria>> Get()
         {
-            return await _Context.Categorias.AsNoTracking().ToListAsync();
+            return _UnitOfWork.CategoriaRepository.Get().ToList();
         }
 
-        [HttpGet("{id:int}", Name ="ObterCategoria")]
-        public async Task<ActionResult<Categoria>> Get(int id)
+        [HttpGet("{id:int}", Name = "ObterCategoria")]
+        public ActionResult<Categoria> Get(int id)
         {
-            var categoria = await _Context.Categorias.AsNoTracking().FirstOrDefaultAsync(c => c.CategoriaId == id);
+            var categoria = _UnitOfWork.CategoriaRepository.GetById(c => c.CategoriaId == id);
 
-            if(categoria is null) { return NotFound("Categoria não encontrada"); }
+            if (categoria is null) { return NotFound("Categoria não encontrada"); }
 
             return categoria;
 
         }
 
         [HttpGet("produtos")]
-        public async  Task<ActionResult<IEnumerable<Categoria>>> GetCategoriaProdutos()
+        public ActionResult<IEnumerable<Categoria>> GetCategoriaProdutos()
         {
 
-            return await _Context.Categorias.AsNoTracking().Include(c => c.produtos).ToListAsync();
+            return _UnitOfWork.CategoriaRepository.GetCategoriasProdutos().ToList();
 
-        }
+        }        
 
 
         [HttpPost]
@@ -50,8 +51,7 @@ namespace JorgeLanches.Controllers
 
             if (categoria is null) { return BadRequest(); }
 
-            _Context.Categorias.Add(categoria);
-            _Context.SaveChanges();
+            _UnitOfWork.CategoriaRepository.Add(categoria);
 
             return new CreatedAtRouteResult("ObterCategoria",
                 new { id = categoria.CategoriaId }, categoria);
@@ -64,8 +64,8 @@ namespace JorgeLanches.Controllers
 
             if(id != categoria.CategoriaId) { return BadRequest(); }
 
-            _Context.Entry(categoria).State = EntityState.Modified;
-            _Context.SaveChanges();
+            _UnitOfWork.CategoriaRepository.Update(categoria);
+            _UnitOfWork.Commit();
 
             return Ok(categoria);
 
@@ -74,12 +74,12 @@ namespace JorgeLanches.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var categoria = _Context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+            var categoria = _UnitOfWork.CategoriaRepository.GetById(c => c.CategoriaId == id);
 
             if(categoria is null) { return NotFound("Categoria não encontrada"); }
 
-            _Context.Categorias.Remove(categoria);
-            _Context.SaveChanges();
+            _UnitOfWork.CategoriaRepository.Delete(categoria);
+            _UnitOfWork.Commit();
 
             return Ok(categoria);
 

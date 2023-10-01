@@ -1,5 +1,6 @@
 ﻿using JorgeLanches.Context;
 using JorgeLanches.Models;
+using JorgeLanches.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,19 +11,19 @@ namespace JorgeLanches.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly AppDbContext _Context;
+        private readonly IUnitOfWork _UnitOfWork;
 
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(IUnitOfWork context)
         {
-            _Context = context;
+            _UnitOfWork = context;
         }
 
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Produto>>> Get()
+        public ActionResult<IEnumerable<Produto>> Get()
         {
-            var listaProdutos = await _Context.Produtos.AsNoTracking().ToListAsync();
+            var listaProdutos = _UnitOfWork.ProdutoRepository.Get().ToList();
 
             if(listaProdutos is null) { return NotFound(); }
 
@@ -33,14 +34,20 @@ namespace JorgeLanches.Controllers
 
 
         [HttpGet("{id:int}", Name ="ObterProduto")]
-        public async Task<ActionResult<Produto>> Get(int id)
+        public ActionResult<Produto> Get(int id)
         {
-            var produto = await _Context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
+            var produto = _UnitOfWork.ProdutoRepository.GetById(p => p.ProdutoId ==id);
         
             if(produto is null) { return NotFound(); }
 
             return produto;
             
+        }
+
+        [HttpGet("menorpreco")]
+        public ActionResult<IEnumerable<Produto>> GetProdutosMenorPreco()
+        {
+            return _UnitOfWork.ProdutoRepository.GetProdutoPrecoOrdenado().ToList();
         }
 
         [HttpPost]
@@ -49,12 +56,11 @@ namespace JorgeLanches.Controllers
 
             if (produto is null)  return BadRequest();
 
-            _Context.Produtos.Add(produto);
-            _Context.SaveChanges();
+            _UnitOfWork.ProdutoRepository.Add(produto);
+            _UnitOfWork.Commit();
 
             return new CreatedAtRouteResult("ObterProduto",
-                new { id = produto.ProdutoId }, produto);
-        
+                new { id = produto.ProdutoId }, produto);       
 
         }
 
@@ -64,8 +70,8 @@ namespace JorgeLanches.Controllers
         {
             if(id != produto.ProdutoId) { return BadRequest();}
 
-            _Context.Entry(produto).State = EntityState.Modified;
-            _Context.SaveChanges();
+            _UnitOfWork.ProdutoRepository.Update(produto);
+            _UnitOfWork.Commit();
 
             return Ok(produto);
 
@@ -75,12 +81,12 @@ namespace JorgeLanches.Controllers
         public ActionResult Delete(int id)
         {
 
-            var produto = _Context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = _UnitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
 
             if (produto is null) { return NotFound("Produto não Encontrado."); }
 
-            _Context.Produtos.Remove(produto);
-            _Context.SaveChanges();
+            _UnitOfWork.ProdutoRepository.Delete(produto);
+            _UnitOfWork.Commit();
 
             return Ok(produto);
 
