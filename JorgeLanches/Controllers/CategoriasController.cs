@@ -62,7 +62,7 @@ namespace JorgeLanches.Controllers
 
 
         [HttpPost]
-        public ActionResult Post(CategoriaDTO categoriaDto)
+        public ActionResult Post([FromBody]CategoriaDTO categoriaDto)
         {
 
             if (categoriaDto is null) { return BadRequest(); }
@@ -70,6 +70,7 @@ namespace JorgeLanches.Controllers
             var categoria = _Mapper.Map<Categoria>(categoriaDto);
 
             _UnitOfWork.CategoriaRepository.Add(categoria);
+            _UnitOfWork.Commit();
 
             var categoriaDtoRetorno = _Mapper.Map<CategoriaDTO>(categoria);
 

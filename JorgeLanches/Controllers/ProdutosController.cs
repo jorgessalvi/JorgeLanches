@@ -62,7 +62,7 @@ namespace JorgeLanches.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(ProdutoDTO produtoDto)
+        public ActionResult Post([FromBody]ProdutoDTO produtoDto)
         {
 
             if (produtoDto is null)  return BadRequest();
