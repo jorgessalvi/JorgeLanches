@@ -1,4 +1,6 @@
-﻿using JorgeLanches.Context;
+﻿using AutoMapper;
+using JorgeLanches.Context;
+using JorgeLanches.DTOs;
 using JorgeLanches.Models;
 using JorgeLanches.Repository;
 using Microsoft.AspNetCore.Http;
@@ -12,73 +14,88 @@ namespace JorgeLanches.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly IUnitOfWork _UnitOfWork;
+        private readonly IMapper _Mapper;
 
-        public ProdutosController(IUnitOfWork context)
+        public ProdutosController(IUnitOfWork context, IMapper mapper)
         {
             _UnitOfWork = context;
+            _Mapper = mapper;
         }
 
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get()
         {
-            var listaProdutos = _UnitOfWork.ProdutoRepository.Get().ToList();
+            var produtos = _UnitOfWork.ProdutoRepository.Get().ToList();
 
-            if(listaProdutos is null) { return NotFound(); }
+            if(produtos is null) { return NotFound(); }
 
-            return listaProdutos;
+            var produtosDto = _Mapper.Map<List<ProdutoDTO>>(produtos);
+
+            return produtosDto;
 
         }
 
 
 
         [HttpGet("{id:int}", Name ="ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public ActionResult<ProdutoDTO> Get(int id)
         {
             var produto = _UnitOfWork.ProdutoRepository.GetById(p => p.ProdutoId ==id);
         
             if(produto is null) { return NotFound(); }
 
-            return produto;
+            var produtoDto = _Mapper.Map<ProdutoDTO>(produto);
+
+            return produtoDto;
             
         }
 
         [HttpGet("menorpreco")]
-        public ActionResult<IEnumerable<Produto>> GetProdutosMenorPreco()
+        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosMenorPreco()
         {
-            return _UnitOfWork.ProdutoRepository.GetProdutoPrecoOrdenado().ToList();
+            var produtos = _UnitOfWork.ProdutoRepository.GetProdutoPrecoOrdenado().ToList();
+            var produtosDto = _Mapper.Map<List<ProdutoDTO>>(produtos);
+
+            return produtosDto;
         }
 
         [HttpPost]
-        public ActionResult Post(Produto produto)
+        public ActionResult Post(ProdutoDTO produtoDto)
         {
 
-            if (produto is null)  return BadRequest();
+            if (produtoDto is null)  return BadRequest();
+
+            var produto = _Mapper.Map<Produto>(produtoDto);
 
             _UnitOfWork.ProdutoRepository.Add(produto);
             _UnitOfWork.Commit();
 
+            var produtoDtoRetorno = _Mapper.Map<ProdutoDTO>(produto);
+
             return new CreatedAtRouteResult("ObterProduto",
-                new { id = produto.ProdutoId }, produto);       
+                new { id = produto.ProdutoId }, produtoDtoRetorno);       
 
         }
 
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto)
+        public ActionResult Put(int id, ProdutoDTO produtoDto)
         {
-            if(id != produto.ProdutoId) { return BadRequest();}
+            if(id != produtoDto.ProdutoId) { return BadRequest();}
+
+            var produto = _Mapper.Map<Produto>(produtoDto);
 
             _UnitOfWork.ProdutoRepository.Update(produto);
             _UnitOfWork.Commit();
 
-            return Ok(produto);
+            return Ok();
 
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ProdutoDTO> Delete(int id)
         {
 
             var produto = _UnitOfWork.ProdutoRepository.GetById(p => p.ProdutoId == id);
@@ -88,7 +105,9 @@ namespace JorgeLanches.Controllers
             _UnitOfWork.ProdutoRepository.Delete(produto);
             _UnitOfWork.Commit();
 
-            return Ok(produto);
+            var produtoDto = _Mapper.Map<ProdutoDTO>(produto);
+
+            return Ok(produtoDto);
 
         }
 
