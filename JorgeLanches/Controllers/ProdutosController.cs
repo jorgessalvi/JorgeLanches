@@ -2,10 +2,13 @@
 using JorgeLanches.Context;
 using JorgeLanches.DTOs;
 using JorgeLanches.Models;
+using JorgeLanches.Pagination;
 using JorgeLanches.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace JorgeLanches.Controllers
 {
@@ -25,9 +28,21 @@ namespace JorgeLanches.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProdutoDTO>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
         {
-            var produtos = _UnitOfWork.ProdutoRepository.Get().ToList();
+            var produtos = _UnitOfWork.ProdutoRepository.GetProdutos(produtosParameters);
+
+            var metadata = new
+            {
+                produtos.TotalCount,
+                produtos.PageSize,
+                produtos.CurrentPage,
+                produtos.TotalPages,
+                produtos.HasNext,
+                produtos.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
 
             if(produtos is null) { return NotFound(); }
 

@@ -1,5 +1,6 @@
 ﻿using JorgeLanches.Context;
 using JorgeLanches.Models;
+using JorgeLanches.Pagination;
 
 namespace JorgeLanches.Repository
 {
@@ -12,6 +13,14 @@ namespace JorgeLanches.Repository
         public IEnumerable<Produto> GetProdutoPrecoOrdenado()
         {
             return Get().OrderBy(p => p.Preco);
+        }
+
+        public PagedList<Produto> GetProdutos(ProdutosParameters produtosParams)
+        {
+            return PagedList<Produto>.ToPagedList( Get()
+                                                  .OrderBy(p => p.Nome),
+                                                  produtosParams.PageNumber,
+                                                  produtosParams.PageSize);
         }
     }
 }
