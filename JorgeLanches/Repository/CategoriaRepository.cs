@@ -1,5 +1,6 @@
 ﻿using JorgeLanches.Context;
 using JorgeLanches.Models;
+using JorgeLanches.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
@@ -9,6 +10,13 @@ namespace JorgeLanches.Repository
     {
         public CategoriaRepository(AppDbContext context) : base(context)
         {
+        }
+
+        public PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParams)
+        {
+            return PagedList<Categoria>.ToPagedList( Get().OrderBy(c => c.CategoriaId),
+                                                     categoriasParams.PageNumber,
+                                                     categoriasParams.PageSize);
         }
 
         public IEnumerable<Categoria> GetCategoriasProdutos()

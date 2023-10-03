@@ -17,10 +17,9 @@ namespace JorgeLanches.Repository
 
         public PagedList<Produto> GetProdutos(ProdutosParameters produtosParams)
         {
-            return PagedList<Produto>.ToPagedList( Get()
-                                                  .OrderBy(p => p.Nome),
-                                                  produtosParams.PageNumber,
-                                                  produtosParams.PageSize);
+            return PagedList<Produto>.ToPagedList( Get().OrderBy(p => p.ProdutoId),
+                                                   produtosParams.PageNumber,
+                                                   produtosParams.PageSize);
         }
     }
 }

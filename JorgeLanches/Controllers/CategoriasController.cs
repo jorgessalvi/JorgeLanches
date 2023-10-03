@@ -2,10 +2,12 @@
 using JorgeLanches.Context;
 using JorgeLanches.DTOs;
 using JorgeLanches.Models;
+using JorgeLanches.Pagination;
 using JorgeLanches.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace JorgeLanches.Controllers
 {
@@ -24,9 +26,21 @@ namespace JorgeLanches.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CategoriaDTO>> Get()
+        public ActionResult<IEnumerable<CategoriaDTO>> Get([FromQuery] CategoriasParameters categoriaParameters)
         {
-            var categorias = _UnitOfWork.CategoriaRepository.Get().ToList();
+            var categorias = _UnitOfWork.CategoriaRepository.GetCategorias(categoriaParameters);
+
+            var metadata = new
+            {
+                categorias.TotalCount,
+                categorias.PageSize,
+                categorias.CurrentPage,
+                categorias.TotalPages,
+                categorias.HasNext,
+                categorias.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
 
             var categoriasDto = _Mapper.Map<List<CategoriaDTO>>(categorias);
 
