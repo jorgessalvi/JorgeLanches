@@ -5,7 +5,7 @@ namespace JorgeLanches.Repository
 {
     public interface IProdutoRepository : IRepository<Produto>
     {
-        IEnumerable<Produto> GetProdutoPrecoOrdenado();
-        PagedList<Produto> GetProdutos(ProdutosParameters produtosParams);
+        Task<IEnumerable<Produto>> GetProdutoPrecoOrdenado();
+        Task<PagedList<Produto>> GetProdutos(ProdutosParameters produtosParams);
     }
 }

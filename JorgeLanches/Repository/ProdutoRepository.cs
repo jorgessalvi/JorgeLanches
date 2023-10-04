@@ -1,6 +1,7 @@
 ﻿using JorgeLanches.Context;
 using JorgeLanches.Models;
 using JorgeLanches.Pagination;
+using Microsoft.EntityFrameworkCore;
 
 namespace JorgeLanches.Repository
 {
@@ -10,14 +11,14 @@ namespace JorgeLanches.Repository
         {
         }
 
-        public IEnumerable<Produto> GetProdutoPrecoOrdenado()
+        public async Task<IEnumerable<Produto>> GetProdutoPrecoOrdenado()
         {
-            return Get().OrderBy(p => p.Preco);
+            return await Get().OrderBy(p => p.Preco).ToListAsync();
         }
 
-        public PagedList<Produto> GetProdutos(ProdutosParameters produtosParams)
+        public async Task<PagedList<Produto>> GetProdutos(ProdutosParameters produtosParams)
         {
-            return PagedList<Produto>.ToPagedList( Get().OrderBy(p => p.ProdutoId),
+            return await PagedList<Produto>.ToPagedList( Get().OrderBy(p => p.ProdutoId),
                                                    produtosParams.PageNumber,
                                                    produtosParams.PageSize);
         }

@@ -27,9 +27,9 @@ namespace JorgeLanches.Repository
             return _Context.Set<T>().AsNoTracking();
         }
 
-        public T GetById(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        public async Task<T> GetById(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
         {
-            return _Context.Set<T>().SingleOrDefault(predicate);
+            return await _Context.Set<T>().SingleOrDefaultAsync(predicate);
         }
 
         public void Update(T entity)

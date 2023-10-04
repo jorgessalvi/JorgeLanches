@@ -12,16 +12,18 @@ namespace JorgeLanches.Repository
         {
         }
 
-        public PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParams)
+        public async Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriasParams)
         {
-            return PagedList<Categoria>.ToPagedList( Get().OrderBy(c => c.CategoriaId),
+            return await PagedList<Categoria>.ToPagedList( Get().OrderBy(c => c.CategoriaId),
                                                      categoriasParams.PageNumber,
                                                      categoriasParams.PageSize);
         }
 
-        public IEnumerable<Categoria> GetCategoriasProdutos()
+        public async Task<IEnumerable<Categoria>> GetCategoriasProdutos()
         {
-            return Get().Include(c => c.produtos);
+            return await Get().Include(c => c.produtos).ToListAsync();
         }
+
+        
     }
 }

@@ -6,7 +6,7 @@ namespace JorgeLanches.Repository
 {
     public interface ICategoriaRepository : IRepository<Categoria>
     {
-        IEnumerable<Categoria> GetCategoriasProdutos();
-        PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParams);
+        Task<IEnumerable<Categoria>> GetCategoriasProdutos();
+        Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriasParams);
     }
 }
