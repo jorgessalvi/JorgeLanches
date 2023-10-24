@@ -4,6 +4,7 @@ using JorgeLanches.DTOs;
 using JorgeLanches.Models;
 using JorgeLanches.Pagination;
 using JorgeLanches.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using System.Text.Json;
 
 namespace JorgeLanches.Controllers
 {
+    [Authorize(AuthenticationSchemes ="Bearer")]
     [Route("[controller]")]
     [ApiController]
     public class CategoriasController : ControllerBase
