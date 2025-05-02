@@ -15,5 +15,9 @@ namespace JorgeLanches.Repository
         T Update(T entity);
 
         T Delete(T entity);
+
+        Task CommitAsync();
+
+        void Dispose();
     }
 }

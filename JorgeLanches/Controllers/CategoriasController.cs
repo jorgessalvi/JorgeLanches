@@ -6,7 +6,6 @@ using JorgeLanches.Filters;
 using JorgeLanches.Models;
 using JorgeLanches.Pagination;
 using JorgeLanches.Repository;
-using JorgeLanches.Repository.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +19,12 @@ namespace JorgeLanches.Controllers
     [ApiController]
     public class CategoriasController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICategoriaRepository _categoriaRepository;
         private readonly IMapper _mapper;
 
-        public CategoriasController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoriasController(ICategoriaRepository categoriaRepository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _categoriaRepository = categoriaRepository;
             _mapper = mapper;
         }
 
@@ -33,7 +32,7 @@ namespace JorgeLanches.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync([FromQuery]PaginationParameters paginationParameters)
         {
-            var categorias = await _unitOfWork.CategoriaRepository.GetAllAsync(paginationParameters);
+            var categorias = await _categoriaRepository.GetAllAsync(paginationParameters);
             if (categorias is null)
             {
                 return NotFound();
@@ -46,7 +45,7 @@ namespace JorgeLanches.Controllers
         [HttpGet("{categoriaId:int}", Name ="ObterCategoria")]
         public async Task<ActionResult<CategoriaDTO>> GetAsync(int categoriaId)
         {
-            var categoria = await _unitOfWork.CategoriaRepository.GetAsync(c => c.Id == categoriaId);
+            var categoria = await _categoriaRepository.GetAsync(c => c.Id == categoriaId);
             if (categoria is null)
             {
                 return NotFound("Categoria Não encontrada");
@@ -61,7 +60,7 @@ namespace JorgeLanches.Controllers
         [ServiceFilter(typeof(ApiLoggingFilter))]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutosAsync()
         {
-            var categorias = await _unitOfWork.CategoriaRepository.GetCategoriasProdutosAsync();
+            var categorias = await _categoriaRepository.GetCategoriasProdutosAsync();
             if (categorias is null)
             {
                 return NotFound();
@@ -81,8 +80,8 @@ namespace JorgeLanches.Controllers
 
             var categoria = _mapper.Map<Categoria>(categoriaDTO);
 
-            _unitOfWork.CategoriaRepository.Create(categoria);
-            await _unitOfWork.CommitAsync();
+            _categoriaRepository.Create(categoria);
+            await _categoriaRepository.CommitAsync();
 
             var novaCategoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
 
@@ -102,8 +101,8 @@ namespace JorgeLanches.Controllers
 
             var categoria = _mapper.Map<Categoria>(categoriaDTO);
 
-            _unitOfWork.CategoriaRepository.Update(categoria);
-            await _unitOfWork.CommitAsync();
+            _categoriaRepository.Update(categoria);
+            await _categoriaRepository.CommitAsync();
 
             var categoriaAlteradaDTO = _mapper.Map<CategoriaDTO>(categoria);
 
@@ -114,14 +113,14 @@ namespace JorgeLanches.Controllers
         [HttpDelete("categoriaId:int")]
         public async Task<ActionResult<CategoriaDTO>> Delete(int categoriaId)
         {
-            var categoria = await _unitOfWork.CategoriaRepository.GetAsync(c => c.Id == categoriaId);
+            var categoria = await _categoriaRepository.GetAsync(c => c.Id == categoriaId);
             if (categoria is null)
             {
                 return NotFound();
             }
 
-            _unitOfWork.CategoriaRepository.Delete(categoria);
-            _unitOfWork.CommitAsync();
+            _categoriaRepository.Delete(categoria);
+            await _categoriaRepository.CommitAsync();
 
             var categoriaRemovidaDTO = _mapper.Map<CategoriaDTO>(categoria);
 
@@ -132,7 +131,7 @@ namespace JorgeLanches.Controllers
         [HttpGet("/CategoriaPorNome")]
         public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriaPorNomeAsync([FromQuery]CategoriaFilterParameters parameters)
         {
-            var categorias = await _unitOfWork.CategoriaRepository.GetCategoriaPorNomeAsync(parameters);
+            var categorias = await _categoriaRepository.GetCategoriaPorNomeAsync(parameters);
             if (categorias is null)
             {
                 return NotFound();
