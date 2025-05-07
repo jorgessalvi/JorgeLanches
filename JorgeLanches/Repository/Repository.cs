@@ -49,5 +49,15 @@ namespace JorgeLanches.Repository
             _context.Set<T>().Update(entity);
             return entity;
         }
+
+        public async Task CommitAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 }

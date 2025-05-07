@@ -3,7 +3,6 @@ using JorgeLanches.DTOs.Mappings;
 using JorgeLanches.Filters;
 using JorgeLanches.Models;
 using JorgeLanches.Repository;
-using JorgeLanches.Repository.UnitOfWork;
 using JorgeLanches.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -134,7 +133,6 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(typeof(DTOMappingProfile));
 
 

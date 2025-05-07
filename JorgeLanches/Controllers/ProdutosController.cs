@@ -5,7 +5,6 @@ using JorgeLanches.DTOs.Mappings;
 using JorgeLanches.Models;
 using JorgeLanches.Pagination;
 using JorgeLanches.Repository;
-using JorgeLanches.Repository.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +18,12 @@ namespace JorgeLanches.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IProdutoRepository _produtoRepository;
         private readonly IMapper _mapper;
 
-        public ProdutosController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProdutosController(IProdutoRepository produtoRepository, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _produtoRepository = produtoRepository;
             _mapper = mapper;
         }
 
@@ -32,33 +31,33 @@ namespace JorgeLanches.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> Get([FromQuery]PaginationParameters parameters)
         {
-            var produtos = await _unitOfWork.ProdutoRepository.GetAllAsync(parameters);
+            var produtos = await _produtoRepository.GetAllAsync(parameters);
             if(produtos is null)
             {
                 return NotFound();
             }
 
             var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return produtosDTO.ToList();
+            return Ok(produtosDTO.ToList());
         }
 
         [Authorize(Policy = "UserOnly")]
         [HttpGet("{produtoId:int}", Name="ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> Get(int produtoId)
         {
-            var produto =  await _unitOfWork.ProdutoRepository.GetAsync(p => p.Id == produtoId);
+            var produto =  await _produtoRepository.GetAsync(p => p.Id == produtoId);
             if (produto is null)
             {
                 return NotFound("Produto Não encontrado.");
             }
 
             var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
-            return produtoDTO;
+            return Ok(produtoDTO);
         }
 
         [Authorize(Policy = "UserOnly")]
         [HttpPost]
-        public async Task<ActionResult> Post(ProdutoRequestDTO produtoRequestDTO)
+        public async Task<ActionResult<ProdutoDTO>> Post(ProdutoRequestDTO produtoRequestDTO)
         {
             if (produtoRequestDTO is null)
             {
@@ -67,8 +66,8 @@ namespace JorgeLanches.Controllers
 
             var produto = _mapper.Map<Produto>(produtoRequestDTO);
 
-            _unitOfWork.ProdutoRepository.Create(produto);
-            await _unitOfWork.CommitAsync();
+            _produtoRepository.Create(produto);
+            await _produtoRepository.CommitAsync();
 
             var novoProdutoDTO = _mapper.Map<ProdutoDTO>(produto);
             return new CreatedAtRouteResult("ObterProduto", new { produtoId = novoProdutoDTO.Id }, novoProdutoDTO);
@@ -76,7 +75,7 @@ namespace JorgeLanches.Controllers
 
         [Authorize(Policy = "AdminOnly")]
         [HttpPut("{produtoId:int}")]
-        public async Task<ActionResult> Put(int produtoId, ProdutoRequestDTO produtoRequestDTO)
+        public async Task<ActionResult<ProdutoDTO>> Put(int produtoId, ProdutoRequestDTO produtoRequestDTO)
         {
             if (produtoId != produtoRequestDTO.Id)
             {
@@ -85,8 +84,8 @@ namespace JorgeLanches.Controllers
 
             var produto = _mapper.Map<Produto>(produtoRequestDTO);
 
-            _unitOfWork.ProdutoRepository.Update(produto);
-            await _unitOfWork.CommitAsync();
+            _produtoRepository.Update(produto);
+            await _produtoRepository.CommitAsync();
 
             var produtoAtualizadoDTO = _mapper.Map<ProdutoDTO>(produto);
             return Ok(produtoAtualizadoDTO);
@@ -96,14 +95,14 @@ namespace JorgeLanches.Controllers
         [HttpDelete("{produtoId:int}")]
         public async Task<ActionResult<ProdutoDTO>> Delete(int produtoId)
         {
-            var produto = await _unitOfWork.ProdutoRepository.GetAsync(p => p.Id == produtoId);
+            var produto = await _produtoRepository.GetAsync(p => p.Id == produtoId);
             if (produto is null)
             {
                 return NotFound("Produto Não encontrado.");
             }
 
-            _unitOfWork.ProdutoRepository.Delete(produto);
-            await _unitOfWork.CommitAsync();
+            _produtoRepository.Delete(produto);
+            await _produtoRepository.CommitAsync();
 
             var produtoRemovidoDTO = _mapper.Map<ProdutoDTO>(produto);
             return Ok(produtoRemovidoDTO);
@@ -113,27 +112,27 @@ namespace JorgeLanches.Controllers
         [HttpGet("/ProdutoPorCategoria")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutoPorCategoria(int categoriaId)
         {
-            var produtos = await _unitOfWork.ProdutoRepository.GetProdutosPorCategoriaAsync(categoriaId);
+            var produtos = await _produtoRepository.GetProdutosPorCategoriaAsync(categoriaId);
             if (produtos is null)
             {
                 return NotFound();
             }
 
             var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return produtosDTO.ToList();            
+            return Ok(produtosDTO.ToList());            
         }
 
         [Authorize(Policy = "UserOnly")]
         [HttpGet("/ProdutoPorPreço")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutoFiltroPreco([FromQuery]ProdutoFilterParameters produtoFilterParameters)
         {
-            var produtos = await _unitOfWork.ProdutoRepository.GetProdutosFiltroPrecoAsync(produtoFilterParameters);
+            var produtos = await _produtoRepository.GetProdutosFiltroPrecoAsync(produtoFilterParameters);
             if (produtos is null)
             {
                 return NotFound();
             }
 
-            return _mapper.Map<IEnumerable<ProdutoDTO>>(produtos).ToList();            
+            return Ok(_mapper.Map<IEnumerable<ProdutoDTO>>(produtos).ToList());
         }
     }
 }
