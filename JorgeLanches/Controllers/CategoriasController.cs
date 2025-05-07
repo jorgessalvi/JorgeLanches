@@ -38,7 +38,7 @@ namespace JorgeLanches.Controllers
                 return NotFound();
             }
             var categoriasDTO = _mapper.Map<IEnumerable<CategoriaDTO>>(categorias);
-            return categoriasDTO.ToList();
+            return Ok(categoriasDTO);
         }
 
         [Authorize(Policy = "UserOnly")]
@@ -51,7 +51,7 @@ namespace JorgeLanches.Controllers
                 return NotFound("Categoria Não encontrada");
             }
             var categoriaDTO = _mapper.Map<CategoriaDTO>(categoria);
-            return categoriaDTO;
+            return Ok(categoriaDTO);
         }
 
         [EnableRateLimiting(policyName:"FixedWindow")]
@@ -137,7 +137,7 @@ namespace JorgeLanches.Controllers
                 return NotFound();
             }
             var categoriasDTO = _mapper.Map<IEnumerable<CategoriaDTO>>(categorias).ToList();
-            return categoriasDTO;
+            return Ok(categoriasDTO);
         }
     }
 }

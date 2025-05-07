@@ -1,6 +1,6 @@
 ﻿using JorgeLanches.Models;
 using JorgeLanches.Pagination;
-namespace JorgeLanches.UnitTests;
+namespace JorgeLanches.UnitTests.Pagination;
 
 public class PaginationTests
 {
@@ -28,6 +28,6 @@ public class PaginationTests
     [Test]
     public void FilterPages_NullCollection_ThrowsArgumentNullException()
     {
-        Assert.That(() => Pagination<Categoria>.FilterPages((IQueryable<Categoria>)null, new PaginationParameters()), Throws.ArgumentNullException);
+        Assert.That(() => Pagination<Categoria>.FilterPages(null, new PaginationParameters()), Throws.ArgumentNullException);
     }
 }

@@ -38,7 +38,7 @@ namespace JorgeLanches.Controllers
             }
 
             var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return produtosDTO.ToList();
+            return Ok(produtosDTO.ToList());
         }
 
         [Authorize(Policy = "UserOnly")]
@@ -52,12 +52,12 @@ namespace JorgeLanches.Controllers
             }
 
             var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
-            return produtoDTO;
+            return Ok(produtoDTO);
         }
 
         [Authorize(Policy = "UserOnly")]
         [HttpPost]
-        public async Task<ActionResult> Post(ProdutoRequestDTO produtoRequestDTO)
+        public async Task<ActionResult<ProdutoDTO>> Post(ProdutoRequestDTO produtoRequestDTO)
         {
             if (produtoRequestDTO is null)
             {
@@ -75,7 +75,7 @@ namespace JorgeLanches.Controllers
 
         [Authorize(Policy = "AdminOnly")]
         [HttpPut("{produtoId:int}")]
-        public async Task<ActionResult> Put(int produtoId, ProdutoRequestDTO produtoRequestDTO)
+        public async Task<ActionResult<ProdutoDTO>> Put(int produtoId, ProdutoRequestDTO produtoRequestDTO)
         {
             if (produtoId != produtoRequestDTO.Id)
             {
@@ -119,7 +119,7 @@ namespace JorgeLanches.Controllers
             }
 
             var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
-            return produtosDTO.ToList();            
+            return Ok(produtosDTO.ToList());            
         }
 
         [Authorize(Policy = "UserOnly")]
@@ -132,7 +132,7 @@ namespace JorgeLanches.Controllers
                 return NotFound();
             }
 
-            return _mapper.Map<IEnumerable<ProdutoDTO>>(produtos).ToList();            
+            return Ok(_mapper.Map<IEnumerable<ProdutoDTO>>(produtos).ToList());
         }
     }
 }
