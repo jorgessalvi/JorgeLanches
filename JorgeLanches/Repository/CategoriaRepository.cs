@@ -26,7 +26,7 @@ namespace JorgeLanches.Repository
                categorias = categorias.Where(c => c.Nome.Contains(parameters.Identificação));
             }
 
-            if (categorias is null)
+            if (categorias.Count() == 0)
                 return null;
 
             var categoriasPaginado = Pagination<Categoria>.FilterPages(categorias, parameters);
