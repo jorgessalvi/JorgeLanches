@@ -36,6 +36,7 @@ From this point, we are able to consume Produtos and Categorias endpoints for as
   <li>ASP.NET Roles is used to manage authorizations.</li>
   <li>Global Rate Limiting using fixed window.</li>
   <li>Repository Pattern.</li>
+  <li>Async Methods.</li>
   <li>DTOs with AutoMapper.</li>
   <li>Dependency Injection.</li>
   <li>Unit Tests using mock and InMemory Database.</li>
